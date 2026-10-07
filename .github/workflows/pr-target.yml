@@ -1,0 +1,20 @@
+name: pr-target-checkout
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled]
+permissions:
+  contents: read
+jobs:
+  checkout-head-ref:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
+      - run: |
+          echo "head_ref=${{ github.head_ref }}"
+          echo "pr_head_sha=${{ github.event.pull_request.head.sha }}"
+          echo "HEAD=$(git rev-parse HEAD)"
+          git log --oneline -3
+          echo "--- FORK-ONLY.txt ---"
+          cat FORK-ONLY.txt 2>/dev/null || echo "(absent)"
